@@ -101,7 +101,7 @@ export default function AssignmentEditor() {
                 <table>
                 <tr>
                     <label> Assign to</label><br/>
-                    <input id="wd-assign-to" value={100} />
+                    <input id="wd-assign-to" value={"Everyone"} />
                 </tr><br/>
                 <tr>
                     <label >Due</label><br/>
