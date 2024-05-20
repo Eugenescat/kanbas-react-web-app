@@ -1,12 +1,12 @@
 
 const courses = [
-  { id: 5610, title: 'CS5610 Web Development', term: 'Fall', year: 2023, section: '01', image: '/images/reactjs.jpg' },
-  { id: 5600, title: 'CS5600 Computer Systems', term: 'Fall', year: 2023, section: '02', image: '/images/c_logo.jpg' },
-  { id: 5200, title: 'CS5200 Database Management Systems', term: 'Fall', year: 2023, section: '03', image: '/images/golang_logo.jpg' },
-  { id: 5100, title: 'CS5100 Foundations of AI', term: 'Fall', year: 2023, section: '04', image: '/images/java_logo.jpg' },
-  { id: 5700, title: 'CS5700 Computer Networking', term: 'Fall', year: 2023, section: '05', image: '/images/rust_logo.png' },
-  { id: 6650, title: 'CS6650 Distributed Systems', term: 'Fall', year: 2023, section: '06', image: '/images/golang_logo.jpg' },
-  { id: 5150, title: 'CS5150 Game AI', term: 'Fall', year: 2023, section: '07', image: '/images/python_logo.jpg' }
+  { id: 5610, title: 'CS5610 Web Development Foundation', term: 'Fall', year: 2023, section: '01', image: '/images/reactjs.jpg' },
+  { id: 5600, title: 'CS5600 Computer Systems', term: 'Fall', year: 2023, section: '02', image: '/images/reactjs.jpg' },
+  { id: 5200, title: 'CS5200 Database Management Systems', term: 'Fall', year: 2023, section: '03', image: '/images/reactjs.jpg' },
+  { id: 5100, title: 'CS5100 Foundations of Artificial Intelligence', term: 'Fall', year: 2023, section: '04', image: '/images/reactjs.jpg' },
+  { id: 5700, title: 'CS5700 Computer Networking', term: 'Fall', year: 2023, section: '05', image: '/images/reactjs.jpg' },
+  { id: 6650, title: 'CS6650 Distributed Systems', term: 'Fall', year: 2023, section: '06', image: '/images/reactjs.jpg' },
+  { id: 5150, title: 'CS5150 Game Artificial Intelligence', term: 'Fall', year: 2023, section: '07', image: '/images/reactjs.jpg' }
 ];
 
 export default function Dashboard() {
