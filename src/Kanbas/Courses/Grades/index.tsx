@@ -1,8 +1,58 @@
-import { FaSearch } from 'react-icons/fa';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import { FaSearch, FaFileImport, FaFileExport, FaFilter } from 'react-icons/fa';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { FaFileImport, FaFileExport, FaFilter } from 'react-icons/fa';
+import * as db from '../../Database';
+
+// Define TypeScript interfaces
+interface User {
+  _id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  dob: string;
+  role: string;
+}
+
+interface Assignment {
+  _id: string;
+  title: string;
+  course: string;
+  points?: string;
+}
+
+interface Grade {
+  _id: string;
+  student: string;
+  assignment: string;
+  grade: string;
+}
+
+interface Enrollment {
+  _id: string;
+  user: string;
+  course: string;
+}
 
 export default function Grades() {
+  const { cid } = useParams<{ cid: string }>(); // Get the course ID from the URL
+  const enrollments: Enrollment[] = db.enrollments.filter(enrollment => enrollment.course === cid); // Get enrollments for the course
+  const assignments: Assignment[] = db.assignments.filter(assignment => assignment.course === cid); // Get assignments for the course
+  const users: User[] = db.users; // Get all users
+  const grades: Grade[] = db.grades; // Get all grades
+
+  // Get enrolled students
+  const enrolledStudents: User[] = enrollments
+    .map(enrollment => users.find(user => user._id === enrollment.user))
+    .filter((user): user is User => user !== undefined); // Type guard to filter out undefined values
+
+  // Helper function to get the grade for a student and assignment
+  const getGrade = (studentId: string, assignmentId: string): string => {
+    const grade = grades.find(grade => grade.student === studentId && grade.assignment === assignmentId);
+    return grade ? grade.grade : 'N/A';
+  };
+
   return (
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -29,11 +79,11 @@ export default function Grades() {
       </div>
       <div className="row mb-3">
         <div className="col-md-6">
-            <label htmlFor="search-students" className="form-label">Student Names</label>
-            <div className="input-group">
-                <span className="input-group-text"><FaSearch /></span>
-                <input type="text" id="search-students" className="form-control" placeholder="Search Students" />
-            </div>
+          <label htmlFor="search-students" className="form-label">Student Names</label>
+          <div className="input-group">
+            <span className="input-group-text"><FaSearch /></span>
+            <input type="text" id="search-students" className="form-control" placeholder="Search Students" />
+          </div>
         </div>
         <div className="col-md-6">
           <label htmlFor="search-assignments" className="form-label">Assignment Names</label>
@@ -54,55 +104,20 @@ export default function Grades() {
           <thead>
             <tr>
               <th>Student Name</th>
-              <th>A1 SETUP<br />Out of 100</th>
-              <th>A2 HTML<br />Out of 100</th>
-              <th>A3 CSS<br />Out of 100</th>
-              <th>A4 BOOTSTRAP<br />Out of 100</th>
+              {assignments.map(assignment => (
+                <th key={assignment._id}>{assignment.title}<br />Out of {assignment.points || 100}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Jane Adams</td>
-              <td>100%</td>
-              <td>96.67%</td>
-              <td>92.18%</td>
-              <td>66.22%</td>
-            </tr>
-            <tr>
-              <td>Christina Allen</td>
-              <td>100%</td>
-              <td>100%</td>
-              <td>92.18%</td>
-              <td>100%</td>
-            </tr>
-            <tr>
-              <td>Samreen Ansari</td>
-              <td>100%</td>
-              <td>100%</td>
-              <td>100%</td>
-              <td>100%</td>
-            </tr>
-            <tr>
-              <td>Han Bao</td>
-              <td>100%</td>
-              <td>100%</td>
-              <td><input type="text" className="form-control w-50" defaultValue="88.03%"/></td>
-              <td>98.99%</td>
-            </tr>
-            <tr>
-              <td>Mahi Sai Srinivas Bobbili</td>
-              <td>100%</td>
-              <td>96.67%</td>
-              <td>98.37%</td>
-              <td>100%</td>
-            </tr>
-            <tr>
-              <td>Siran Cao</td>
-              <td>100%</td>
-              <td>100%</td>
-              <td>100%</td>
-              <td>100%</td>
-            </tr>
+            {enrolledStudents.map(student => (
+              <tr key={student._id}>
+                <td>{student.firstName} {student.lastName}</td>
+                {assignments.map(assignment => (
+                  <td key={assignment._id}>{getGrade(student._id, assignment._id)}</td>
+                ))}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
