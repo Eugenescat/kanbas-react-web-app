@@ -1,9 +1,20 @@
 import { FaPlus, FaSearch } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
 
 export default function AssignmentsControls() {
+  const navigate = useNavigate();
+
+  const handleAddAssignment = () => {
+    navigate('new');
+  };
+
   return (
     <div id="wd-assignments-controls" className="text-nowrap">
-      <button id="wd-add-assignment-btn" className="btn btn-lg btn-danger me-1 float-end">
+      <button
+        id="wd-add-assignment-btn"
+        className="btn btn-lg btn-danger me-1 float-end"
+        onClick={handleAddAssignment}
+      >
         <FaPlus className="position-relative me-2" style={{ bottom: "1px" }} />
         Assignment
       </button>

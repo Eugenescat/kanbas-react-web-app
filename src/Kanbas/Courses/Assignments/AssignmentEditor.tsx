@@ -1,14 +1,56 @@
-import { useParams, Link } from 'react-router-dom';
-import * as db from '../../Database';
+// src/Kanbas/Courses/Assignments/AssignmentEditor.tsx
+import React, { useState } from 'react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { addAssignment, updateAssignment } from './reducer';
+import { useSelector, useDispatch } from "react-redux";
+// import * as db from '../../Database';
 
 export default function AssignmentEditor() {
-  const { cid, aid } = useParams(); // Get the course ID and assignment ID from the URL
-  const assignments = db.assignments; // Get the assignments from the Database
-  const assignment = assignments.find(a => a._id === aid); // Find the assignment by ID
+  // 如果 aid 存在，意味着这是一个编辑作业的操作。如果 aid 不存在，意味着这是一个创建新作业的操作。
+  const { cid, aid } = useParams<{ cid: string; aid?: string }>();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  if (!assignment) {
-    return <div>Assignment not found</div>;
-  }
+  const isNew = !aid;
+  const { assignments } = useSelector((state: any) => state.assignmentReducer); // get assignments from redux
+
+  // 如果是新作业（即 isNew 为 true），assignment 将是一个空对象。如果是编辑现有作业（即 isNew 为 false），assignment 将是从 assignments 数组中找到的具有相应 aid 的作业对象。
+  const assignment = isNew ? ({} as any) : (assignments.find((a:any) => a._id === aid) as any);
+
+  const [title, setTitle] = useState(assignment?.title || '');
+  const [description, setDescription] = useState(assignment?.description || '');
+  const [points, setPoints] = useState(assignment?.points || '');
+  const [dueDate, setDueDate] = useState(assignment?.dueDate || '');
+  const [availableDate, setAvailableDate] = useState(assignment?.availableDate || '');
+
+  const handleSave = () => {
+    if (!cid) {
+      console.error("Course ID is required");
+      return;
+    }
+
+    const assignment = {
+      _id: isNew ? new Date().getTime().toString() : aid,
+      description,
+      title,
+      course: cid,
+      points,
+      dueDate,
+      availableDate,
+    };
+
+    if (isNew) {
+      dispatch(addAssignment(assignment));
+    } else {
+      dispatch(updateAssignment(assignment));
+    }
+
+    navigate(`/Kanbas/Courses/${cid}/Assignments`);
+  };
+
+  const handleCancel = () => {
+    navigate(`/Kanbas/Courses/${cid}/Assignments`);
+  };
 
   return (
     <div id="wd-assignments-editor" className="container mt-4">
@@ -17,21 +59,19 @@ export default function AssignmentEditor() {
         <div className="mb-3 row">
           <label htmlFor="wd-name" className="col-sm-2 col-form-label">Assignment Name</label>
           <div className="col-sm-10">
-            <input type="text" id="wd-name" defaultValue={assignment.title} className="form-control" />
+            <input type="text" id="wd-name" value={title} onChange={(e) => setTitle(e.target.value)} className="form-control" />
           </div>
         </div>
         <div className="mb-3 row">
           <label htmlFor="wd-description" className="col-sm-2 col-form-label">Description</label>
           <div className="col-sm-10">
-            <textarea id="wd-description" rows={5} className="form-control">
-              {assignment.description || 'No description provided.'}
-            </textarea>
+            <textarea id="wd-description" rows={5} value={description} onChange={(e) => setDescription(e.target.value)} className="form-control" />
           </div>
         </div>
         <div className="mb-3 row">
           <label htmlFor="wd-points" className="col-sm-2 col-form-label">Points</label>
           <div className="col-sm-10">
-            <input type="number" id="wd-points" defaultValue={assignment.points} className="form-control" />
+            <input type="number" id="wd-points" value={points} onChange={(e) => setPoints(e.target.value)} className="form-control" />
           </div>
         </div>
         <div className="mb-3 row">
@@ -91,11 +131,11 @@ export default function AssignmentEditor() {
             <label htmlFor="wd-assign-to" className="col-sm-2 col-form-label"><strong>Assign to</strong></label>
             <input type="text" id="wd-assign-to" defaultValue="Everyone" className="form-control mb-3" />
             <label htmlFor="wd-due-date" className="form-label">Due</label>
-            <input type="datetime-local" id="wd-due-date" defaultValue={assignment.dueDate} className="form-control mb-3" />
+            <input type="datetime-local" id="wd-due-date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="form-control mb-3" />
             <div className="row">
               <div className="col-sm-6">
                 <label htmlFor="wd-available-from" className="form-label">Available from</label>
-                <input type="datetime-local" id="wd-available-from" defaultValue={assignment.availableDate} className="form-control mb-3" />
+                <input type="datetime-local" id="wd-available-from" value={availableDate} onChange={(e) => setAvailableDate(e.target.value)} className="form-control mb-3" />
               </div>
               <div className="col-sm-6">
                 <label htmlFor="wd-available-until" className="form-label">Until</label>
@@ -103,8 +143,8 @@ export default function AssignmentEditor() {
               </div>
             </div>
             <div className="d-flex justify-content-end">
-              <Link to={`/Kanbas/Courses/${cid}/Assignments`} className="btn btn-primary me-2">Save</Link>
-              <Link to={`/Kanbas/Courses/${cid}/Assignments`} className="btn btn-secondary">Cancel</Link>
+              <button type="button" className="btn btn-primary me-2" onClick={handleSave}>Save</button>
+              <button type="button" className="btn btn-secondary" onClick={handleCancel}>Cancel</button>
             </div>
           </div>
         </div>
