@@ -4,6 +4,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { addAssignment, updateAssignment } from './reducer';
 import { useSelector, useDispatch } from "react-redux";
 // import * as db from '../../Database';
+import * as client from "./client";
 
 export default function AssignmentEditor() {
   // 如果 aid 存在，意味着这是一个编辑作业的操作。如果 aid 不存在，意味着这是一个创建新作业的操作。
@@ -23,6 +24,17 @@ export default function AssignmentEditor() {
   const [dueDate, setDueDate] = useState(assignment?.dueDate || '');
   const [availableDate, setAvailableDate] = useState(assignment?.availableDate || '');
 
+  const saveAssignment = async (assignment: any) => {
+    const status = await client.updateAssignment(assignment);
+    dispatch(updateAssignment(assignment));
+  };
+
+  const createAssignment = async (assignment: any) => {
+    const newAssignment = await client.createAssignment(cid as string, assignment);
+    dispatch(addAssignment(newAssignment));
+  };
+
+
   const handleSave = () => {
     if (!cid) {
       console.error("Course ID is required");
@@ -40,9 +52,9 @@ export default function AssignmentEditor() {
     };
 
     if (isNew) {
-      dispatch(addAssignment(assignment));
+      createAssignment(assignment);
     } else {
-      dispatch(updateAssignment(assignment));
+      saveAssignment(assignment);
     }
 
     navigate(`/Kanbas/Courses/${cid}/Assignments`);

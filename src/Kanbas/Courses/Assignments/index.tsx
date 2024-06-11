@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from 'react-router-dom';
 import { BsGripVertical } from 'react-icons/bs';
 import { FaFileAlt } from 'react-icons/fa';
@@ -6,14 +6,29 @@ import AssignmentsControls from './AssignmentsControls';
 import SingleAssignmentControlButtons from './SingleAssignmentControlButtons';
 import AssignmentControlButtons from './AssignmentControlButtonsOrigin';
 import { useSelector, useDispatch } from "react-redux";
-import * as db from '../../Database';
-import { deleteAssignment } from "./reducer";
+import { addAssignment, deleteAssignment, updateAssignment, setAssignments } from "./reducer";
+import * as client from "./client";
 
 export default function Assignments() {
   const dispatch = useDispatch();
   const { cid } = useParams(); // Get the course ID from the URL
   // const assignments = db.assignments; // Get the assignments from the Database
   const { assignments } = useSelector((state: any) => state.assignmentReducer); // get assignments from redux
+  // get assignments from the server
+  const fetchAssignments = async () => {
+    const Assignments = await client.findAssignmentsForCourse(cid as string);
+    dispatch(setAssignments(Assignments));
+  };
+  useEffect(() => {
+    fetchAssignments();
+  }, []);
+
+  const removeAssignment = async (assignmentId: string) => {
+    await client.deleteAssignment(assignmentId);
+    dispatch(deleteAssignment(assignmentId));
+  };
+
+
 
   return (
     <div>
@@ -45,7 +60,7 @@ export default function Assignments() {
                         <span style={{ color: 'black' }}>Assignment ID: {assignment._id} | <strong>Not available until</strong> {assignment.availableDate} | <strong>Due</strong> {assignment.dueDate} | {assignment.points} pts</span>
                       </p>
                     </div>
-                    <SingleAssignmentControlButtons assignmentId={assignment._id} deleteAssignment={(assignmentId: any) => dispatch(deleteAssignment(assignmentId))} />
+                    <SingleAssignmentControlButtons assignmentId={assignment._id} deleteAssignment={(assignmentId: any) => {removeAssignment(assignmentId);}} />
                   </li>
                 ))}
             </ul>
