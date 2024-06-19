@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import * as db from "../Database";
 
 export default function Dashboard({ courses, course, setCourse, addNewCourse,
   deleteCourse, updateCourse }: {
@@ -11,35 +10,6 @@ export default function Dashboard({ courses, course, setCourse, addNewCourse,
   deleteCourse: (course: any) => void;
   updateCourse: () => void; }) {
   
-
-  // const [courses, setCourses] = useState(db.courses);
-  // const [course, setCourse] = useState<any>({
-  //   _id: "0", name: "New Course", number: "New Number",
-  //   startDate: "2023-09-10", endDate: "2023-12-15",
-  //   image: "/images/reactjs.jpg", description: "New Description"
-  // });
-
-  // const addNewCourse = () => {
-  //   const newCourse = { ...course,
-  //                       _id: new Date().getTime().toString() };
-  //   setCourses([...courses, { ...course, ...newCourse }]);
-  // };
-
-  // const deleteCourse = (courseId: string) => {
-  //   setCourses(courses.filter((course) => course._id !== courseId));
-  // };
-
-  // const updateCourse = () => {
-  //   setCourses(
-  //     courses.map((c) => {
-  //       if (c._id === course._id) {
-  //         return course;
-  //       } else {
-  //         return c;
-  //       }
-  //     })
-  //   );
-  // };
 
   return (
     <div id="wd-dashboard">
@@ -56,6 +26,8 @@ export default function Dashboard({ courses, course, setCourse, addNewCourse,
       </h5> <br />
       <input value={course.name} className="form-control mb-2" 
              onChange={(e) => setCourse({ ...course, name: e.target.value }) } />
+      <input value={course.number} className="form-control mb-2" 
+             onChange={(e) => setCourse({ ...course, number: e.target.value }) } />
       <textarea value={course.description} className="form-control"
               onChange={(e) => setCourse({ ...course, description: e.target.value }) } /><hr /><hr />
 
@@ -72,6 +44,9 @@ export default function Dashboard({ courses, course, setCourse, addNewCourse,
                       style={{ textDecoration: "none", color: "navy", fontWeight: "bold" }} >
                       {course.name}
                     </span>
+                    <p className="wd-dashboard-course-title card-text" style={{ maxHeight: 53, overflow: "hidden" }}>
+                      {course.number}
+                    </p>
                     <p className="wd-dashboard-course-title card-text" style={{ maxHeight: 53, overflow: "hidden" }}>
                       {course.description}
                     </p>
